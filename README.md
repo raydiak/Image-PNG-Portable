@@ -12,19 +12,19 @@ but mandated by the PNG specification.
 
 ## Synopsis
 
-use Image::PNG::Portable;
-my $o = Image::PNG::Portable.new: :width(16), :height(16);
-$o.set: 8,8, 255,255,255;
-$o.write: 'image.png';
+    use Image::PNG::Portable;
+    my $o = Image::PNG::Portable.new: :width(16), :height(16);
+    $o.set: 8,8, 255,255,255;
+    $o.write: 'image.png';
 
 ## Usage
 
 The following types are used internally and in this documentation. They are
 here for brevity, not exported in the public API.
 
-subset UInt of Int where * >= 0; # unsigned
-subset UInt8 of Int where 0 <= * <= 255; # unsigned 8-bit
-subset PInt of Int where * > 0; # positive
+    subset UInt of Int where * >= 0; # unsigned
+    subset UInt8 of Int where 0 <= * <= 255; # unsigned 8-bit
+    subset PInt of Int where * > 0; # positive
 
 ### .new(PInt :$width!, PInt :$height!)
 
