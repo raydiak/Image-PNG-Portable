@@ -60,7 +60,10 @@ method write (NEStr $file, Bool :$free = True) {
 }
 
 method free () {
-    free $!data-pointer unless $!freed;
+    return True if $!freed;
+
+    $!data = Any;
+    free $!data-pointer;
 
     True;
 }
