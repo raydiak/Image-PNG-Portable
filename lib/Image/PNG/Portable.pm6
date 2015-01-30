@@ -4,13 +4,16 @@ use String::CRC32;
 need Compress::Zlib::Raw;
 use NativeCall;
 
+#`[[[
+https://rt.perl.org/Public/Bug/Display.html?id=123700
 subset UInt of Int where * >= 0;
 subset PInt of Int where * > 0;
 subset UInt8 of Int where 0 <= * <= 255;
 subset NEStr of Str where *.chars;
+]]]
 
-has PInt $.width = die 'Width is required';
-has PInt $.height = die 'Height is required';
+has Int $.width = die 'Width is required';
+has Int $.height = die 'Height is required';
 
 # + 1 allows filter bytes in the raw data, avoiding needless buf manip later
 has $!line-bytes = $!width * 3 + 1;
@@ -23,9 +26,9 @@ has $!freed = False;
 my $magic = Blob.new: 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A;
 
 method set (
-    UInt $x where * < $!width,
-    UInt $y where * < $!height,
-    UInt8 $r, UInt8 $g, UInt8 $b
+    Int $x where * < $!width,
+    Int $y where * < $!height,
+    Int $r, Int $g, Int $b
 ) {
     my $buffer = $!data;
     # + 1 skips aforementioned filter byte
@@ -38,7 +41,7 @@ method set (
     True;
 }
 
-method write (NEStr $file, Bool :$free = True) {
+method write (Str $file, Bool :$free = True) {
     my $fh = $file.IO.open(:w, :bin);
 
     $fh.write: $magic;
@@ -69,7 +72,7 @@ method free () {
 }
 
 # creates a chunk
-sub chunk (NEStr $type, *@data) {
+sub chunk (Str $type, *@data) {
     my @length = bytes @data.elems, 4;
 
     my @type := $type.encode;
@@ -80,7 +83,7 @@ sub chunk (NEStr $type, *@data) {
 }
 
 # converts a number to a list of byte values with optional fixed width
-sub bytes (UInt $n is copy, UInt $count = 0) {
+sub bytes (Int $n is copy, Int $count = 0) {
     my @return;
 
     my $exp = 1;

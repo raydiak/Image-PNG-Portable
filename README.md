@@ -9,6 +9,9 @@ Reading, precompression filters, alpha, palettes, grayscale, non-8-bit
 channels, and ancillary features like gamma correction, color profiles, and
 textual metadata are all NYI.
 
+Range checks (UInt, UInt8, PInt) are disabled pending a Rakudo bugfix. Violate
+them at your peril.
+
 ## Synopsis
 
     use Image::PNG::Portable;
