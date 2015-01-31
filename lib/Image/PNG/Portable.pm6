@@ -68,6 +68,8 @@ method free () {
     $!data = Any;
     free $!data-pointer;
 
+    $!freed = True;
+
     True;
 }
 
