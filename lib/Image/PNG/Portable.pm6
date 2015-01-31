@@ -41,7 +41,7 @@ method set (
     True;
 }
 
-method write (Str $file, Bool :$free = True) {
+method write (Str $file) {
     my $fh = $file.IO.open(:w, :bin);
 
     $fh.write: $magic;
@@ -57,8 +57,6 @@ method write (Str $file, Bool :$free = True) {
 
     $fh.close;
 
-    self.free if $free;
-
     True;
 }
 
@@ -71,6 +69,10 @@ method free () {
     $!freed = True;
 
     True;
+}
+
+submethod DESTROY () {
+    self.free;
 }
 
 # creates a chunk

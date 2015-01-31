@@ -36,22 +36,18 @@ Creates a new Image::PNG object, initialized to black.
 
 Sets the color of a pixel in the image.
 
-### .write($file, Bool :$free = True)
+### .write($file)
 
 Writes the contents of the image to the specified file.
 
-Also calls .free (see below) if $free is True (the default). Note that this
-means the object is entirely useless after a call to .write, unless :!free is
-passed. Freeing is essential for preventing memory leaks, so either allow
-freeing on your last write, or call .free after you are done with the object,
-before your application exits (including early/erroneous termination).
-
 ### .free()
 
-Releases the memory used for in-memory storage. Once freed, the
-Image::PNG::Portable object is useless and should be discarded. If you do not
-free, either via .write or by calling this method directly, your application
-will likely leak memory.
+Releases the memory used for storage. Once freed, the Image::PNG::Portable
+object is useless and should be discarded. Calling this method is entirely
+optional. It mainly exists to give you a way to ensure timely release of the
+memory, e.g. when generating many (possibly large) images in series. If you
+don't free explicitly, it will be called when your object is garbage-collected
+(via DESTROY), or the OS will reclaim the memory when your program terminates.
 
 ## BUGS
 
