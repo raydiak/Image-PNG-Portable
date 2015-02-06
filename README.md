@@ -40,15 +40,6 @@ Sets the color of a pixel in the image.
 
 Writes the contents of the image to the specified file.
 
-### .free()
-
-Releases the memory used for storage. Once freed, the Image::PNG::Portable
-object is useless and should be discarded. Calling this method is entirely
-optional. It mainly exists to give you a way to ensure timely release of the
-memory, e.g. when generating many (possibly large) images in series. If you
-don't free explicitly, it will be called when your object is garbage-collected
-(via DESTROY), or the OS will reclaim the memory when your program terminates.
-
 ## BUGS
 
 Very large images are known to cause a crash. The limit is around 10 or 15
