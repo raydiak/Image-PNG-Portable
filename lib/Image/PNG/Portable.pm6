@@ -2,7 +2,6 @@ class Image::PNG::Portable;
 
 use String::CRC32;
 use Compress::Zlib;
-use NativeCall;
 
 #`[[[
 https://rt.perl.org/Public/Bug/Display.html?id=123700
@@ -66,7 +65,7 @@ sub write-chunk (IO::Handle $fh, Str $type, @data = ()) {
 
     my @type := $type.encode;
     my @td := @data ~~ Blob ??
-        concat-blob @type, @data !!
+        @type ~ @data !!
         Blob[uint8].new: @type.list, @data.list;
     $fh.write: @td;
 
@@ -97,25 +96,4 @@ sub bytes (Int $n is copy, Int $count = 0) {
 
     Blob[uint8].new: @return;
 }
-
-# concatenates two blobs into a buf via nativecall for performance
-sub concat-blob (Blob[uint8] $a, Blob[uint8] $b) {
-    return $a unless $b;
-
-    my $buf = Buf[uint8].new;
-    $buf[$a + $b - 1] = 0;
-    # this is might be faster than .new(@$a), but that's not really why we're doing it
-    # we exploit the fact that memcpy gives us a pointer...
-    my $ptr = memcpy-buf $buf, $a, +$a;
-    # ...to allow pointer arithmetic for copying the second part
-    memcpy OpaquePointer.new($ptr + $a), $b, +$b;
-
-    $buf;
-}
-
-# nativecall memcpy for above...should "Int" be int32? portability questions about pointer width, size_t, etc
-sub memcpy (OpaquePointer, Blob, Int)
-    returns OpaquePointer is native { * };
-# nativecall doesn't seem to work on multis, thus -buf
-sub memcpy-buf (Buf, Blob, Int) returns OpaquePointer is symbol('memcpy') is native { * };
 
