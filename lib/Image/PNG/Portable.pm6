@@ -45,9 +45,12 @@ method write (Str $file) {
     $fh.write: $magic;
 
     write-chunk $fh, 'IHDR', @(bytes($!width, 4).list, bytes($!height, 4).list,
-        8, 2, 0, 0, 0); # w, h, bpp, color, compress, filter, interlace
+        8, 2, 0, 0, 0); # w, h, bits/channel, color, compress, filter, interlace
 
     # would love to skip compression for my purposes, but PNG mandates it
+    # splitting the data into multiple chunks would be good past a certain size
+        # for now I'd rather expose weak spots in the pipeline wrt large data sets
+        # PNG allows chunks up to (but excluding) 2GB (after compression for IDAT)
     write-chunk $fh, 'IDAT', compress $!data;
 
     write-chunk $fh, 'IEND';

@@ -9,8 +9,11 @@ Reading, precompression filters, alpha, palettes, grayscale, non-8-bit
 channels, and ancillary features like gamma correction, color profiles, and
 textual metadata are all NYI.
 
-Range checks (UInt, UInt8, PInt) are disabled pending a Rakudo bugfix. Violate
-them at your peril.
+An installed zlib DLL is temporarily required on Windows, which makes it not
+entirely ::Portable yet.
+
+Range checks (UInt, UInt8, and PInt, mentioned below) are disabled pending a
+Rakudo bugfix. Violate them at your peril.
 
 ## Synopsis
 
@@ -42,8 +45,7 @@ Writes the contents of the image to the specified file.
 
 ## BUGS
 
-Very large images are known to cause a crash. The limit is around 10 or 15
-megapixels. Please report any other bugs at
+None known. Please report any other bugs at
 https://github.com/raydiak/Image-PNG-Portable/issues or to
 raydiak@cyberuniverses.com .
 
