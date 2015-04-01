@@ -36,6 +36,10 @@ Creates a new Image::PNG object, initialized to black.
 
 Sets the color of a pixel in the image.
 
+### .get(UInt $x, UInt $y)
+
+Gets the color of a pixel in the image as a 3-element array of channel values.
+
 ### .write($file)
 
 Writes the contents of the image to the specified file.
