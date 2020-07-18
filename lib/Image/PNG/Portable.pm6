@@ -13,9 +13,11 @@ subset NEStr of Str where *.chars;
 
 has Int $.width = die 'Width is required';
 has Int $.height = die 'Height is required';
+has Bool $.alpha = True;
 
+has $!channels = $!alpha ?? 4 !! 3;
 # + 1 allows filter bytes in the raw data, avoiding needless buf manip later
-has $!line-bytes = $!width * 3 + 1;
+has $!line-bytes = $!width * $!channels + 1;
 has $!data-bytes = $!line-bytes * $!height;
 has $!data = do { my $b = buf8.new; $b[$!data-bytes-1] = 0; $b; };
 
@@ -25,15 +27,35 @@ my $magic = Blob.new: 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A;
 method set (
     Int $x where * < $!width,
     Int $y where * < $!height,
-    Int $r, Int $g, Int $b
+    Int $r, Int $g, Int $b, Int $a = 255
 ) {
     my $buffer = $!data;
     # + 1 skips aforementioned filter byte
-    my $index = $!line-bytes * $y + 3 * $x + 1;
+    my $index = $!line-bytes * $y + $!channels * $x + 1;
 
     $buffer[$index++] = $r;
     $buffer[$index++] = $g;
     $buffer[$index] = $b;
+    $buffer[++$index] = $a if $!alpha;
+
+    True;
+}
+
+method set-all (Int $r, Int $g, Int $b, Int $a = 255) {
+    my $buffer = $!data;
+    my $index = 0;
+    my $alpha = $!alpha;
+
+    for ^$!height {
+        # every line offset by 1 again for filter byte
+        $index++;
+        for ^$!width {
+            $buffer[$index++] = $r;
+            $buffer[$index++] = $g;
+            $buffer[$index++] = $b;
+            $buffer[$index++] = $a if $alpha;
+        }
+    }
 
     True;
 }
@@ -44,9 +66,11 @@ method get (
 ) {
     my $buffer = $!data;
     # + 1 skips aforementioned filter byte
-    my $index = $!line-bytes * $y + 3 * $x + 1;
+    my $index = $!line-bytes * $y + $!channels * $x + 1;
 
-    @( $buffer[$index++], $buffer[$index++], $buffer[$index] );
+    my @ret = $buffer[$index++], $buffer[$index++], $buffer[$index];
+    @ret[3] = $buffer[++$index] if $!alpha;
+    @ret;
 }
 
 method write (Str $file) {
@@ -55,7 +79,7 @@ method write (Str $file) {
     $fh.write: $magic;
 
     write-chunk $fh, 'IHDR', @(bytes($!width, 4).Slip, bytes($!height, 4).Slip,
-        8, 2, 0, 0, 0); # w, h, bits/channel, color, compress, filter, interlace
+        8, ($!alpha ?? 6 !! 2), 0, 0, 0); # w, h, bits/channel, color, compress, filter, interlace
 
     # would love to skip compression for my purposes, but PNG mandates it
     # splitting the data into multiple chunks would be good past a certain size

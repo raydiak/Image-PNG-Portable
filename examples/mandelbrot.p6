@@ -2,19 +2,20 @@
 
 use v6;
 
-my constant $root = $?FILE.IO.parent.parent;
+my constant $root = $?FILE.IO.cleanup.parent.parent;
 use lib $root.child('lib');
-use lib $root.child('blib').child('lib');
 
 use Image::PNG::Portable;
 
 sub MAIN (
     Int $width = 150,
     Int $height = $width,
+    Bool :$transparent = False,
     Int :$iter = 150,
     Bool :$quiet = False
 ) {
-    my $img = Image::PNG::Portable.new: :$width, :$height;
+    my $img = Image::PNG::Portable.new: :$width, :$height, :alpha($transparent);
+    $img.set-all(255, 255, 255) if !$transparent;
 
     my ($max-x, $max-y) = $width - 1, $height - 1;
     my $half-height = ($height / 2).ceiling;
@@ -25,18 +26,8 @@ sub MAIN (
         5;
 
     say 'Rendering...' unless $quiet;
+
     for ^$width X ^$half-height -> ($x, $y) {
-
-        # this knot will go away when initial fill color can be specified
-        my $set = False;
-        NEXT {
-            unless $set {
-                $img.set: $x, $y, 255, 255, 255;
-                $img.set: $x, $max-y - $y, 255, 255, 255
-                    unless $half-max-y && $y == $half-max-y;
-            }
-        }
-
         my $c = ($x/$max-x - .5) * 4 + ($y/$max-y - .5) * 4i * $height / $width;
         my ($re, $im) = $c.re, $c.im;
 
@@ -59,7 +50,6 @@ sub MAIN (
             $img.set: $x, $max-y - $y, $r, $g, $b
                 unless $half-max-y && $y == $half-max-y;
 
-            $set = True;
             last;
         }
     }

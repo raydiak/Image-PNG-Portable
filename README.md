@@ -4,8 +4,8 @@ This is an almost-pure Perl 6 PNG module.
 
 ## Status
 
-This module is currently useful for outputting opaque 24-bit truecolor images.
-Reading, precompression filters, alpha, palettes, grayscale, non-8-bit
+This module is currently useful for outputting 8-bit-per-channel truecolor
+images.  Reading, precompression filters, palettes, grayscale, non-8-bit
 channels, and ancillary features like gamma correction, color profiles, and
 textual metadata are all NYI.
 
@@ -28,17 +28,22 @@ here for brevity, not exported in the public API.
     subset UInt8 of Int where 0 <= * <= 255; # unsigned 8-bit
     subset PInt of Int where * > 0; # positive
 
-### .new(PInt :$width!, PInt :$height!)
+### .new(PInt :$width!, PInt :$height!, Bool $alpha = True)
 
-Creates a new Image::PNG::Portable object, initialized to black.
+Creates a new Image::PNG::Portable object, initialized to black. If the alpha
+channel is enabled, it is initialized to transparent.
 
-### .set(UInt $x, UInt $y, UInt8 $red, UInt8 $green, UInt8 $blue)
+### .set(UInt $x, UInt $y, UInt8 $red, UInt8 $green, UInt8 $blue, UInt8 $alpha = 255)
 
 Sets the color of a pixel in the image.
 
+### .set-all(UInt8 $red, UInt8 $green, UInt8 $blue, UInt8 $alpha = 255)
+
+Sets the color of all pixels in the image.
+
 ### .get(UInt $x, UInt $y)
 
-Gets the color of a pixel in the image as a 3-element array of channel values.
+Gets the color of a pixel in the image as an array of channel values.
 
 ### .write($file)
 
