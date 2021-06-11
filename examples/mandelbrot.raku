@@ -1,6 +1,4 @@
-#!/usr/bin/env perl6
-
-use v6;
+#!/usr/bin/env raku
 
 my constant $root = $?FILE.IO.cleanup.parent.parent;
 use lib $root.child('lib');

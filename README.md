@@ -1,6 +1,6 @@
 # Image::PNG::Portable
 
-This is an almost-pure Perl 6 PNG module.
+This is an almost-pure Raku PNG module.
 
 ## Status
 
